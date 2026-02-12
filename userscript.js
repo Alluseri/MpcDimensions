@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MpcDimensions
 // @namespace    https://lunahook.dev/
-// @version      v1.0.0
+// @version      v1.0.1
 // @description  A handy dimension auto-picker for Mapartcraft.
 // @author       Alluseri
 // @match        https://rebane2001.com/mapartcraft/
@@ -57,10 +57,6 @@
                 "style": "flex: 1",
                 "innerText": "let's joe"
             }, [], button => {
-                function fetchClosestDimensions(maxX, maxY, targetHor, targetVert, maxSizeDev) {
-
-                }
-
                 button.addEventListener("click", () => {
                     var maxX = id("luna-mpcd-x").value;
                     var maxY = id("luna-mpcd-y").value;
@@ -70,7 +66,6 @@
                     var targetVert = tg[1] - 0;
                     var maxSizeDev = id("luna-mpcd-dev").value;
 
-                    var ratio = targetHor / targetVert;
                     var all = [];
                     for (var x = 1;x < maxX;x++)
                         for (var y = 1;y < maxY;y++) {
@@ -79,7 +74,6 @@
                             var szdev = Math.abs(1 - (xx * targetVert) / (targetHor * targetVert)) * 100;
                             if (szdev > maxSizeDev) continue;
                             all.push([`${x}x${y}`, szdev, `${xx}x${targetVert}`]);
-                            console.log(`${x}x${y} map  (dev: ${(ratio - tratio).toFixed(3)}), more akin to  (dev: )`);
                         }
 
                     all.sort((a, b) => a[1] - b[1]);
