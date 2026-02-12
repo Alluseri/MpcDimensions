@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MpcDimensions
 // @namespace    https://lunahook.dev/
-// @version      v1.0.1
+// @version      1.0.1
 // @description  A handy dimension auto-picker for Mapartcraft.
 // @author       Alluseri
 // @match        https://rebane2001.com/mapartcraft/
