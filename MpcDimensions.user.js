@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MpcDimensions
 // @namespace    https://lunahook.dev/
-// @version      1.0.2
+// @version      1.0.3
 // @description  A handy dimension auto-picker for Mapartcraft.
 // @author       Alluseri
 // @match        https://rebane2001.com/mapartcraft/
@@ -42,11 +42,17 @@
 			display: flex;
 			flex-direction: column;
 			gap: 2px;
-		}
 
-		#luna-mpcd-input-container > div > input {
-			width: 80px;
-			margin-left: 4px;
+            > div {
+            	display: flex;
+                flex-direction: row;
+
+            	> input {
+					width: 80px;
+					margin-left: 4px;
+                    flex: 1;
+				}
+            }
 		}
 
 		#luna-mpcd-calc-btn {
