@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         MpcDimensions
+// @name         MpcUtils
 // @namespace    https://lunahook.dev/
-// @version      1.0.3
-// @description  A handy dimension auto-picker for Mapartcraft.
+// @version      2.0.0
+// @description  A set of handy utilities for Mapartcraft.
 // @author       Alluseri
 // @match        https://rebane2001.com/mapartcraft/
 // @match        https://mike2b2t.github.io/mapartcraft/
@@ -32,13 +32,13 @@
 
 	document.head.appendChild(buildElement("style", {
 		innerHTML: `
-		#luna-mpcd-container {
+		#luna-mpcu-container {
 			display: flex;
 			flex-direction: row;
 			gap: 2px;
 		}
 
-		#luna-mpcd-input-container {
+		#luna-mpcu-input-container {
 			display: flex;
 			flex-direction: column;
 			gap: 2px;
@@ -55,44 +55,49 @@
             }
 		}
 
-		#luna-mpcd-calc-btn {
+		#luna-mpcu-calc-btn {
 			flex: 1;
 		}
+
+        #luna-mpcu-slop-killer-btn {
+            height: 40px;
+            flex: 1;
+        }
 		`
 	}))
 
     function payload() {
         $(".mapPreviewDiv").appendChild(buildElement("div", {
-            "id": "luna-mpcd-container"
+            "id": "luna-mpcu-container"
         }, [
             buildElement("div", {
-                "id": "luna-mpcd-input-container"
+                "id": "luna-mpcu-input-container"
             }, [
                 buildElement("div", {}, [
                     buildElement("span", { innerText: "Max X pieces:" }),
-                    buildElement("input", { min: 1, type: "number", id: "luna-mpcd-x", value: 10 })
+                    buildElement("input", { min: 1, type: "number", id: "luna-mpcu-x", value: 10 })
                 ]),
                 buildElement("div", {}, [
                     buildElement("span", { innerText: "Max Y pieces:" }),
-                    buildElement("input", { min: 1, type: "number", id: "luna-mpcd-y", value: 10 })
+                    buildElement("input", { min: 1, type: "number", id: "luna-mpcu-y", value: 10 })
                 ]),
                 buildElement("div", {}, [
                     buildElement("span", { innerText: "Max dev (%):" }),
-                    buildElement("input", { min: 0, max: 50, step: 0.5, type: "number", id: "luna-mpcd-dev", value: 5 })
+                    buildElement("input", { min: 0, max: 50, step: 0.5, type: "number", id: "luna-mpcu-dev", value: 5 })
                 ])
             ]),
             buildElement("button", {
-                "id": "luna-mpcd-calc-btn",
+                "id": "luna-mpcu-calc-btn",
                 "innerText": "let's joe"
             }, [], button => {
                 button.addEventListener("click", () => {
-                    var maxX = id("luna-mpcd-x").value;
-                    var maxY = id("luna-mpcd-y").value;
+                    var maxX = id("luna-mpcu-x").value;
+                    var maxY = id("luna-mpcu-y").value;
                     var tg = $(".mapResWarning")?.innerText.split("x");
                     if (!tg) return alert("Looks like the map is already good as-is, or the website got updated and broke this userscript!");
                     var targetHor = tg[0] - 0;
                     var targetVert = tg[1] - 0;
-                    var maxSizeDev = id("luna-mpcd-dev").value;
+                    var maxSizeDev = id("luna-mpcu-dev").value;
 
                     var all = [];
                     for (var x = 1;x < maxX;x++)
@@ -113,6 +118,41 @@
                 });
             })
         ]));
+
+        $(".mapPreviewDiv").appendChild(buildElement("button", {
+            "id": "luna-mpcu-slop-killer-btn",
+            "innerText": "Optimize palette by threshold"
+        }, [], Button => {
+            Button.addEventListener("click", () => {
+                var threshold = prompt("What is the threshold for block removal?") - 0;
+                if (!threshold)
+                    return;
+
+                var pack = Array.from($("#materialtable").firstElementChild.children).map(t => ({
+                    block: t.querySelector(".tooltipText")?.innerText,
+                    count: t.lastElementChild.innerText.split(" ")[0] - 0
+                })).filter(t => t.block && t.block != "Placeholder Block" && t.count);
+
+                var summary = [];
+                pack.forEach(t => {
+                    if (t.count < threshold) {
+                        var el = $(".blockSelectionDiv").querySelector(`[alt='${t.block}']`).closest(".colourSet").querySelector(`[alt='None']`);
+                        if (!el) {
+                            alert(`BUG: Failed to uncheck ${t.block}. Please report this!`);
+                            return;
+                        }
+                        el.click(); // this is a bit cringe but im in no mood to figure out the internal workings of the website, sorry
+                        summary.push(`- Deleted ${t.count} of ${t.block}`);
+                    }
+                });
+
+                if (summary.length > 0) {
+                    alert(`Summary for optimization threshold of ${threshold} blocks:\n${summary.join("\n")}`);
+                } else {
+                    alert(`No blocks were found under the threshold of ${threshold} blocks!`);
+                }
+            });
+        }));
     }
 
     if ($(".mapPreviewDiv"))
